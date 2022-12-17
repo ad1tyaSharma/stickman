@@ -1,0 +1,24 @@
+body{
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	flex-direction: column;
+	width: 97vw;
+	padding: 1vw;
+}
+.tables td,.tables th
+{
+	border: solid black 2px;
+	
+}
+
+ td{
+	text-align: center;
+}
+.tables{
+	width: 70vw;
+}
+button:hover,input :hover
+{
+cursor: pointer;
+}

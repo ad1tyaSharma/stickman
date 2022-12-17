@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login Register App</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <link rel="stylesheet" href="./css/main.css" />
+
+  </head>
+  <script>
+	const val = JSON.parse('<%- value %>')
+	let counter = 10000;
+	const generatePDF=()=>
+	{
+		const el  = document.querySelector(".tables")
+		var opt = {
+  margin:       0.3,
+  filename:     `${new Date().toISOString()}.pdf`,
+  image:        { type: 'jpeg', quality: 0.98 },
+  html2canvas:  { scale: 2 },
+  jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
+};
+		html2pdf().set(opt).from(el).save()
+	}
+	const render=()=>
+	{
+		
+	
+	console.log(val);
+	if(val)
+	{
+		
+		for(let i = 0;i<val.length;i++)
+		{
+			const tr = document.createElement('tr')
+			const td1 = document.createElement('td')
+			td1.innerText = val[i].name;
+			const td2 = document.createElement('td')
+			td2.innerText = val[i].modifiedBy;
+			const td3 = document.createElement('td')
+			td3.innerText = `${new Date(val[i].modifiedAt).getDate()}/ ${new Date(val[i].modifiedAt).getMonth()+1}/${new Date(val[i].modifiedAt).getFullYear()} at ${new Date(val[i].modifiedAt).getHours()}:${new Date(val[i].modifiedAt).getMinutes()}`;
+			const td4 = document.createElement('td')
+			for (let j = 0; j < val[i].numbers.length; j++) {
+				if(val[i].numbers[j])
+				{const element = val[i].numbers[j];
+				const p = document.createElement('p')
+				p.innerText = `${element} `
+				td4.appendChild(p)}
+			}
+			tr.appendChild(td1)
+			if('<%- role %>'== 'admin')
+			{
+				tr.appendChild(td2)
+			}
+			
+			tr.appendChild(td3)
+			tr.appendChild(td4)
+			document.querySelector(".tables").appendChild(tr)
+		}
+	}
+	}
+	window.addEventListener('load',render)
+	const addData=(e)=>
+	{
+		//e.preventDefault()
+		const el  = document.createElement('input')
+		el.type = 'number'
+		document.querySelector(".numbers").appendChild(el)
+	}
+    const postData = (e) => {
+      //e.preventDefault();
+      const target = document.querySelector(".name").value;
+      var t = document.querySelector(".numbers").children;
+      const arr = [];
+      for (i = 0; i < t.length; i++) {
+        arr.push(t[i].value);
+      }
+	
+      const data = {
+		user : '<%- name %>',
+        name : target,
+        numbers: arr,
+      };
+	  //console.log(data);
+      fetch("/postData", {
+        method: "POST", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Success:", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+		const tr = document.createElement('tr')
+			const td1 = document.createElement('td')
+			td1.innerText = data.name;
+			const td2 = document.createElement('td')
+			td2.innerText = data.user;
+			const td3 = document.createElement('td')
+			td3.innerText = `${new Date().getDate()}/ ${new Date().getMonth()+1}/${new Date().getFullYear()} at ${new Date().getHours()}:${new Date().getMinutes()}`;
+			const td4 = document.createElement('td')
+			for (let j = 0; j < data.numbers.length; j++) {
+				if(data.numbers[j])
+				{const element = data.numbers[j];
+				const p = document.createElement('p')
+				p.innerText = `${element} `
+				td4.appendChild(p)}
+			}
+			tr.appendChild(td1)
+			if(data.user== 'admin')
+			{
+				tr.appendChild(td2)
+			}
+			
+			tr.appendChild(td3)
+			tr.appendChild(td4)
+			document.querySelector(".tables").appendChild(tr)
+			document.querySelector(".name").value=""
+			document.querySelector(".numbers").innerHTML=`<input type="number"  type="number" id="" />`
+    };
+	const filter=()=>
+	{
+		
+		const to = new Date(document.querySelector("#date1").value)
+		to.setHours(to.getHours() - 5)
+		const from = new Date(document.querySelector("#date2").value)
+		from.setHours(from.getHours() - 5)
+		console.log(`${new Date(to).getTime()} and ${new Date(to).getDate()}/ ${new Date(to).getMonth()+1}/${new Date(to).getFullYear()} at ${new Date(to).getHours()}:${new Date(to).getMinutes()}` );
+		if(to && from)
+		{
+			document.querySelector(".tables").innerHTML=`<table class="tables">
+		<th>Name</th>
+		<% if ( role  == 'admin') {%>
+		<th>modified By</th>
+		<%}%>
+		<th>modifiedAt</th>
+		<th>numbers - serial no.</th>
+	  </table>`
+
+	  const val = JSON.parse('<%- value %>')
+	//console.log(val);
+	if(val)
+	{
+		//console.log("true");
+		for(let i = 0;i<val.length;i++)
+		{
+			const tr = document.createElement('tr')
+			const td1 = document.createElement('td')
+			td1.innerText = val[i].name;
+			const td2 = document.createElement('td')
+			td2.innerText = val[i].modifiedBy;
+			const td3 = document.createElement('td')
+			td3.innerText = `${new Date(val[i].modifiedAt).getDate()}/ ${new Date(val[i].modifiedAt).getMonth()+1}/${new Date(val[i].modifiedAt).getFullYear()} at ${new Date(val[i].modifiedAt).getHours()}:${new Date(val[i].modifiedAt).getMinutes()}`;
+			const td4 = document.createElement('td')
+			for (let j = 0; j < val[i].numbers.length; j++) {
+				const element = val[i].numbers[j];
+				const p = document.createElement('p')
+				p.innerText = `${element} `
+				td4.appendChild(p)
+			}
+			tr.appendChild(td1)
+			if('<%- role %>'== 'admin')
+			{
+				tr.appendChild(td2)
+			}
+			
+			tr.appendChild(td3)
+			tr.appendChild(td4)
+			console.log(new Date(val[i].modifiedAt).getTime()>= new Date(to).getTime());
+			if((new Date(val[i].modifiedAt).getTime()> to.getTime()) && (new Date(val[i].modifiedAt).getTime()< from.getTime()))
+			{document.querySelector(".tables").appendChild(tr)
+		
+		}
+		
+		}
+	}
+
+		}
+	}
+	const reset = ()=>
+	{
+		document.querySelector(".tables").innerHTML=`<table class="tables">
+		<th>Name</th>
+		<% if ( role  == 'admin') {%>
+		<th>modified By</th>
+		<%}%>
+		<th>modifiedAt</th>
+		<th>numbers - serial no.</th>
+	  </table>`
+	  render()
+	}
+  </script>
+
+  <body>
+    <div>
+      <div>
+        <p>Profile Detail</p>
+      </div>
+      <div>
+        <center>
+          <table class="table table-hover text-center">
+            <tr>
+              <td>Name :</td>
+              <td><%= name %></td>
+            </tr>
+            <tr>
+				<td>Email : </td>
+				<td><%= email %></td>
+			  </tr>
+			  <tr>
+				<td>Role : </td>
+				<td><%= role %></td>
+			  </tr>
+          </table>
+        </center>
+      </div>
+      <div class="abc" id="LangTable">
+        <a href="/logout">Logout</a>
+      </div>
+    </div>
+    <div>
+      <form>
+        <p>Enter name: <input type="text" class="name" /></p>
+        <p>Enter number:</p>
+        <div class="numbers">
+          <input type="number" type="number" id="" />
+        </div>
+        <button type="button" onclick="addData()">Add</button>
+        <button type="button" onclick="postData()">Submit</button>
+      </form>
+	  <% if ( role  != 'admin') {%>
+		<h3>Entries made by you</h3>
+		<%} else {%>
+			<h3>Total Entries</h3>
+			
+			<%}%>
+			<span>From</span><input type="date" name="" id="date1">
+			<span>To</span><input type="date" name="" id="date2">
+			<button onclick="filter()">Filter</button>
+			<button onclick="reset()">Reset</button>
+	  <table class="tables">
+		<th>Name</th>
+		<% if ( role  == 'admin') {%>
+		<th>modified By</th>
+		<%}%>
+		<th>modifiedAt</th>
+		<th>numbers - serial no.</th>
+	  </table>
+    </div>
+	<button onclick="generatePDF()">Save as PDF</button>
+  </body>
+</html>
