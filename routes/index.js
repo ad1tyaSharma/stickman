@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const Data = require("../models/data");
+const auth = require("../middleware/auth");
+const jwt = require("jsonwebtoken");
 
 router.get("/", (req, res, next) => {
   return res.render("index.ejs");
@@ -41,9 +43,19 @@ router.post("/", (req, res, next) => {
               if (err) console.log(err);
               else console.log("Success");
             });
+            const token = jwt.sign(
+              { user_id: newPerson._id, email : personInfo.email  },
+              process.env.TOKEN_KEY,
+              {
+                expiresIn: 86400,
+              }
+            );
+            // save user token
+            newPerson.token = token;
           })
             .sort({ _id: -1 })
             .limit(1);
+            
           res.send({ Success: "You are regestered,You can login now." });
         } else {
           res.send({ Success: "Email is already used." });
@@ -59,12 +71,24 @@ router.get("/login", (req, res, next) => {
   return res.render("login.ejs");
 });
 
-router.post("/login", (req, res, next) => {
-  User.findOne({ email: req.body.email }, (err, data) => {
+router.post("/login", async(req, res, next) => {
+  User.findOne({ email: req.body.email }, async(err, data) => {
     if (data) {
       if (data.password == req.body.password) {
         req.session.userId = data.unique_id;
-        res.send({ Success: "Success!" });
+        const user = await User.findOne({ email : req.body.email });
+        const token = jwt.sign(
+          { user_id: user._id, email : req.body.email  },
+          process.env.TOKEN_KEY,
+          {
+            expiresIn: 86400,
+          }
+        );
+  
+        // save user token
+        user.token = token;
+        console.log(token);
+        res.send({ Success: "Success!",token});
       } else {
         res.send({ Success: "Wrong password!" });
       }
@@ -118,38 +142,14 @@ router.get("/logout", (req, res, next) => {
       if (err) {
         return next(err);
       } else {
-        return res.redirect("/");
+        return res.redirect("/login");
       }
     });
   }
 });
 
-router.get("/forgetpass", (req, res, next) => {
-  res.render("forget.ejs");
-});
 
-router.post("/forgetpass", (req, res, next) => {
-  User.findOne({ email: req.body.email }, (err, data) => {
-    if (!data) {
-      res.send({ Success: "This Email Is not regestered!" });
-    } else {
-      if (req.body.password == req.body.passwordConf) {
-        data.password = req.body.password;
-        data.passwordConf = req.body.passwordConf;
 
-        data.save((err, Person) => {
-          if (err) console.log(err);
-          else console.log("Success");
-          res.send({ Success: "Password changed!" });
-        });
-      } else {
-        res.send({
-          Success: "Password does not matched! Both Password should be same.",
-        });
-      }
-    }
-  });
-});
 
 router.post("/postData", (req, res) => {
   Data.findOne({ name: req.body.name }, (err, data) => {

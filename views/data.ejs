@@ -24,7 +24,7 @@
 	}
 	const render=()=>
 	{
-		
+		c = 10000
 	
 	console.log(val);
 	if(val)
@@ -44,7 +44,7 @@
 				if(val[i].numbers[j])
 				{const element = val[i].numbers[j];
 				const p = document.createElement('p')
-				p.innerText = `${element} `
+				p.innerText = `${element} - ${++c}`
 				td4.appendChild(p)}
 			}
 			tr.appendChild(td1)
@@ -96,6 +96,7 @@
         .catch((error) => {
           console.error("Error:", error);
         });
+		c =10000
 		const tr = document.createElement('tr')
 			const td1 = document.createElement('td')
 			td1.innerText = data.name;
@@ -108,7 +109,7 @@
 				if(data.numbers[j])
 				{const element = data.numbers[j];
 				const p = document.createElement('p')
-				p.innerText = `${element} `
+				p.innerText = `${element} - ${++c}`
 				td4.appendChild(p)}
 			}
 			tr.appendChild(td1)
@@ -144,6 +145,7 @@
 
 	  const val = JSON.parse('<%- value %>')
 	//console.log(val);
+	c=10000
 	if(val)
 	{
 		//console.log("true");
@@ -160,7 +162,7 @@
 			for (let j = 0; j < val[i].numbers.length; j++) {
 				const element = val[i].numbers[j];
 				const p = document.createElement('p')
-				p.innerText = `${element} `
+				p.innerText = `${element} - ${++c}`
 				td4.appendChild(p)
 			}
 			tr.appendChild(td1)

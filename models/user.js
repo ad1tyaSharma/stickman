@@ -9,6 +9,7 @@ userSchema = new Schema( {
 	password: String,
 	passwordConf: String,
 	role:{type:String,default:"user"},
+	token: { type: String },
 	createdAt: {
 		type: Date,
 		default: Date.now
