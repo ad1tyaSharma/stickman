@@ -3,43 +3,66 @@
   <head>
     <title>Login Register App</title>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js" integrity="sha512-zJYu9ICC+mWF3+dJ4QC34N9RA0OVS1XtPbnf6oXlvGrLGNB8egsEzu/5wgG90I61hOOKvcywoLzwNmPqGAdATA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <link rel="stylesheet" href="./css/main.css" />
 
   </head>
+  <style>
+	tr.page
+	{
+	  page-break-after: always;
+	  page-break-inside: avoid;
+	
+	}
+</style>
   <script>
 	const val = JSON.parse('<%- value %>')
+	//console.log(val);
 	let counter = 10000;
 	const generatePDF=()=>
+
 	{
-		const el  = document.querySelector(".tables")
-		var opt = {
-  margin:       0.3,
-  filename:     `${new Date().toISOString()}.pdf`,
-  image:        { type: 'jpeg', quality: 0.98 },
-  html2canvas:  { scale: 2 },
-  jsPDF:        { unit: 'in', format: 'letter', orientation: 'landscape' }
-};
-		html2pdf().set(opt).from(el).save()
+		const el = document.querySelector(".tables").innerHTML
+		//const data ={ '<%- value %>'}
+		fetch("/getPDF", {
+        method: "POST", // or 'PUT'
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: '<%- value %>',
+      }) .then((response) => response.json())
+  .then((data) => {
+	if(data.status)
+	{
+		document.querySelector('.download').click()
+	}
+  });
 	}
 	const render=()=>
 	{
 		c = 10000
 	
-	console.log(val);
+	//console.log(val);
 	if(val)
 	{
 		
 		for(let i = 0;i<val.length;i++)
 		{
 			const tr = document.createElement('tr')
+			tr.style.pageBreakAfter='always'
+			tr.style.pageBreakInside='avoid'
 			const td1 = document.createElement('td')
+			td1.style.border='solid black 2px'
 			td1.innerText = val[i].name;
 			const td2 = document.createElement('td')
+			td2.style.border='solid black 2px'
 			td2.innerText = val[i].modifiedBy;
 			const td3 = document.createElement('td')
+			td3.style.border='solid black 2px'
 			td3.innerText = `${new Date(val[i].modifiedAt).getDate()}/ ${new Date(val[i].modifiedAt).getMonth()+1}/${new Date(val[i].modifiedAt).getFullYear()} at ${new Date(val[i].modifiedAt).getHours()}:${new Date(val[i].modifiedAt).getMinutes()}`;
 			const td4 = document.createElement('td')
+			td4.style.border='solid black 2px'
 			for (let j = 0; j < val[i].numbers.length; j++) {
 				if(val[i].numbers[j])
 				{const element = val[i].numbers[j];
@@ -255,5 +278,6 @@
 	  </table>
     </div>
 	<button onclick="generatePDF()">Save as PDF</button>
+	<a href="/pdf" class="download" style="display: none;" >get</a>
   </body>
 </html>
