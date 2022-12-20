@@ -288,11 +288,10 @@ router.post("/getPDF", async (req, res) => {
    if(i<data.length-6)
    {
     for (let j = 0; j < data[i].numbers.length; j++) {
-      str += `<p> ${++cnt}-${data[i].numbers[j]}</p>`;
       tg += `<div class="page" style="page-break-after: always; page-break-inside: avoid;">
       <h2>Name :${data[i].name}</h2>
       <h4>Phone Number : ${data[i].numbers[j]}</h4>
-      <h4>Token Number : ${++cnt}</h4>
+      <h4>Token Number  ${data[i].token[j]}</h4>
       `;
     }
    

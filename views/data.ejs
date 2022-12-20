@@ -21,16 +21,36 @@
 	//console.log(val);
 	let counter = 10000;
 	const generatePDF=()=>
-
 	{
-		const el = document.querySelector(".tables").innerHTML
-		//const data ={ '<%- value %>'}
+		let data = []
+		const el = document.getElementsByClassName("tr")
+		for (let i = 0; i < el.length; i++) {
+			const b = el[i].lastChild.getElementsByTagName('p')
+			const p = []
+			for (let j = 0; j <b.length; j++) {
+				p.push(b[j].innerText)
+			}
+			const c = el[i].lastChild.getElementsByTagName('span')
+			const spn = []
+			for (let j = 0; j <c.length; j++) {
+				spn.push(c[j].innerText)
+			}
+			//console.log(p);
+			data.push({
+				name : el[i].firstChild.innerText,
+				numbers:p,
+				token : spn
+			})
+			
+		}
+		console.log(data[0]);
+		//console.log(el);
 		fetch("/getPDF", {
         method: "POST", // or 'PUT'
         headers: {
           "Content-Type": "application/json",
         },
-        body: '<%- value %>',
+        body: JSON.stringify(data),
       }) .then((response) => response.json())
   .then((data) => {
 	if(data.status)
@@ -66,10 +86,16 @@
 			for (let j = 0; j < val[i].numbers.length; j++) {
 				if(val[i].numbers[j])
 				{const element = val[i].numbers[j];
-				const p = document.createElement('p')
-				p.innerText = `${element} - ${++c}`
-				td4.appendChild(p)}
+					const p = document.createElement('p')
+				p.innerText = `${element} `
+				const spn = document.createElement('span')
+				spn.innerHTML = `-${++c}`
+				td4.appendChild(p)
+				td4.appendChild(spn)
+				}
 			}
+			td4.classList.add('numbers')
+			td1.classList.add('name')
 			tr.appendChild(td1)
 			if('<%- role %>'== 'admin')
 			{
@@ -78,6 +104,7 @@
 			
 			tr.appendChild(td3)
 			tr.appendChild(td4)
+			tr.classList.add('tr')
 			document.querySelector(".tables").appendChild(tr)
 		}
 	}
@@ -131,10 +158,17 @@
 			for (let j = 0; j < data.numbers.length; j++) {
 				if(data.numbers[j])
 				{const element = data.numbers[j];
-				const p = document.createElement('p')
-				p.innerText = `${element} - ${++c}`
-				td4.appendChild(p)}
+					const p = document.createElement('p')
+				p.innerText = `${element} `
+				const spn = document.createElement('span')
+				spn.innerHTML = `-${++c}`
+				td4.appendChild(p)
+				td4.appendChild(spn)
+				
+				}
 			}
+			td4.classList.add('numbers')
+			td1.classList.add('name')
 			tr.appendChild(td1)
 			if(data.user== 'admin')
 			{
@@ -143,6 +177,7 @@
 			
 			tr.appendChild(td3)
 			tr.appendChild(td4)
+			tr.classList.add('tr')
 			document.querySelector(".tables").appendChild(tr)
 			document.querySelector(".name").value=""
 			document.querySelector(".numbers").innerHTML=`<input type="number"  type="number" id="" />`
@@ -154,9 +189,10 @@
 		to.setHours(to.getHours() - 5)
 		const from = new Date(document.querySelector("#date2").value)
 		from.setHours(from.getHours() - 5)
-		console.log(`${new Date(to).getTime()} and ${new Date(to).getDate()}/ ${new Date(to).getMonth()+1}/${new Date(to).getFullYear()} at ${new Date(to).getHours()}:${new Date(to).getMinutes()}` );
-		if(to && from)
+		
+		if(to !== 'Invalid Date' && from !== 'Invalid Date')
 		{
+			console.log(`${to} ${from}`);
 			document.querySelector(".tables").innerHTML=`<table class="tables">
 		<th>Name</th>
 		<% if ( role  == 'admin') {%>
@@ -185,9 +221,15 @@
 			for (let j = 0; j < val[i].numbers.length; j++) {
 				const element = val[i].numbers[j];
 				const p = document.createElement('p')
-				p.innerText = `${element} - ${++c}`
+				p.innerText = `${element} `
+				const spn = document.createElement('span')
+				spn.innerHTML = `-${++c}`
 				td4.appendChild(p)
+				td4.appendChild(spn)
+				
 			}
+			td4.classList.add('numbers')
+			td1.classList.add('name')
 			tr.appendChild(td1)
 			if('<%- role %>'== 'admin')
 			{
@@ -196,6 +238,7 @@
 			
 			tr.appendChild(td3)
 			tr.appendChild(td4)
+			tr.classList.add('tr')
 			console.log(new Date(val[i].modifiedAt).getTime()>= new Date(to).getTime());
 			if((new Date(val[i].modifiedAt).getTime()> to.getTime()) && (new Date(val[i].modifiedAt).getTime()< from.getTime()))
 			{document.querySelector(".tables").appendChild(tr)
@@ -206,6 +249,8 @@
 	}
 
 		}
+
+
 	}
 	const reset = ()=>
 	{
