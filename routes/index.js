@@ -279,44 +279,29 @@ router.post("/getPDF", async (req, res) => {
 
 
   ];
-  data = [...data,...dummy]
+//  data = [...data,...dummy]
   console.log(data.length);
   let tg = "";
   let cnt = 10000;
   for (let i = 0; i < data.length; i++) {
     let str = "";
-   if(i<data.length-6)
+  
    {
     for (let j = 0; j < data[i].numbers.length; j++) {
-      tg += `<div class="page" style="page-break-after: always; page-break-inside: avoid;">
+      tg += `<p class="page" style="page-break-after: always; page-break-inside: avoid;">
       <h2>Name :${data[i].name}</h2>
       <h4>Phone Number : ${data[i].numbers[j]}</h4>
       <h4>Token Number  ${data[i].token[j]}</h4>
+      </p>
       `;
     }
    
    }
     // console.log(tg);
-    else
-    {
-      for (let j = 0; j < data[i].numbers.length; j++) {
-        str += `<p> ${++cnt}-${data[i].numbers[j]}</p>`;
-      }
-      tg += `<div class="page" style="page-break-after: always; page-break-inside: avoid; visibility: hidden;">
-     <h2>Name :${data[i].name}</h2>
-     <h4>Modified by : ${data[i].modifiedBy}</h4>
-     <h4>Modified at : ${new Date(data[i].modifiedAt).getDate()}/ ${
-        new Date(data[i].modifiedAt).getMonth() + 1
-      }/${new Date(data[i].modifiedAt).getFullYear()} at ${new Date(
-        data[i].modifiedAt
-      ).getHours()}:${new Date(data[i].modifiedAt).getMinutes()}</h4>
-     <h4>Numbers</h4>
-     ${str}
-     `;
-    }
+
   }
 
-await axios
+/*await axios
     .post(
       "https://api.html2pdf.app/v1/generate",
       {
@@ -346,14 +331,45 @@ await axios
     })
     .catch((err) => {
       console.log(err.message);
-    });
+    });*/
    
+      // Create a browser instance
+  const browser = await puppeteer.launch();
+
+  const html = `<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Paginated HTML</title>
+    <style>
+      p.page
+      {
+        page-break-after: always; page-break-inside: avoid;
+       
+      }
+    </style>
+  </head>
+  <body>
+  ${tg}
+  </body>
+  </html>`
+  // Create a new page
+  const page = await browser.newPage();
+  await page.setContent(html, { waitUntil: 'domcontentloaded' });
+  const pdf = await page.pdf({
+    path: 'result.pdf',
+    margin: { top: '100px', right: '50px', bottom: '100px', left: '50px' },
+    printBackground: true,
+    format: 'A4',
+  });
+
+  // Close the browser instance
+  await browser.close();
  res.json({msg:'success',
 status : 1})
 });
 router.get('/pdf',(req,res)=>
 {
-  res.download('./document.pdf')
+  res.download('./result.pdf')
 })
 
 module.exports = router;
