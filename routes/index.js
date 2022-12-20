@@ -257,7 +257,26 @@ router.post("/getPDF", async (req, res) => {
       modifiedBy: "John",
       name: "Patrick Hooper",
       numbers:[]
+    },
+    {
+      modifiedAt: "2022-12-16T10:21:52.970Z",
+      modifiedBy: "John",
+      name: "Patrick Hooper",
+      numbers:[]
+    },
+    {
+      modifiedAt: "2022-12-16T10:21:52.970Z",
+      modifiedBy: "John",
+      name: "Patrick Hooper",
+      numbers:[]
+    },{
+      modifiedAt: "2022-12-16T10:21:52.970Z",
+      modifiedBy: "John",
+      name: "Patrick Hooper",
+      numbers:[]
     }
+    
+
 
   ];
   data = [...data,...dummy]
@@ -266,22 +285,17 @@ router.post("/getPDF", async (req, res) => {
   let cnt = 10000;
   for (let i = 0; i < data.length; i++) {
     let str = "";
-   if(i<data.length-3)
+   if(i<data.length-6)
    {
     for (let j = 0; j < data[i].numbers.length; j++) {
       str += `<p> ${++cnt}-${data[i].numbers[j]}</p>`;
+      tg += `<div class="page" style="page-break-after: always; page-break-inside: avoid;">
+      <h2>Name :${data[i].name}</h2>
+      <h4>Phone Number : ${data[i].numbers[j]}</h4>
+      <h4>Token Number : ${++cnt}</h4>
+      `;
     }
-    tg += `<div class="page" style="page-break-after: always; page-break-inside: avoid;">
-   <h2>Name :${data[i].name}</h2>
-   <h4>Modified by : ${data[i].modifiedBy}</h4>
-   <h4>Modified at : ${new Date(data[i].modifiedAt).getDate()}/ ${
-      new Date(data[i].modifiedAt).getMonth() + 1
-    }/${new Date(data[i].modifiedAt).getFullYear()} at ${new Date(
-      data[i].modifiedAt
-    ).getHours()}:${new Date(data[i].modifiedAt).getMinutes()}</h4>
-   <h4>Numbers</h4>
-   ${str}
-   `;
+   
    }
     // console.log(tg);
     else
